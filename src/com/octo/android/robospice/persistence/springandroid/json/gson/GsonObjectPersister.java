@@ -127,11 +127,6 @@ public final class GsonObjectPersister<T> extends InFileObjectPersister<T> {
 		}
 	}
 
-	@Override
-	public boolean canHandleClass(Class<?> clazz) {
-		return true;
-	}
-
 	/** for testing purpose only. Overriding allows to regive package level visibility. */
 	@Override
 	protected void awaitForSaveAsyncTermination(long time, TimeUnit timeUnit) throws InterruptedException {
