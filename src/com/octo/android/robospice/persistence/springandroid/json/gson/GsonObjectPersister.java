@@ -63,17 +63,14 @@ public final class GsonObjectPersister<T> extends InFileObjectPersister<T> {
 						return result;
 					}
 					throw new CacheLoadingException("Unable to restore cache content : cache file is empty");
-				}
-				catch (FileNotFoundException e) {
+				} catch (FileNotFoundException e) {
 					// Should not occur (we test before if file exists)
 					// Do not throw, file is not cached
 					Ln.w("file " + file.getAbsolutePath() + " does not exists", e);
 					return null;
-				}
-				catch (CacheLoadingException e) {
+				} catch (CacheLoadingException e) {
 					throw e;
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					throw new CacheLoadingException(e);
 				}
 			}
@@ -94,14 +91,11 @@ public final class GsonObjectPersister<T> extends InFileObjectPersister<T> {
 					public void run() {
 						try {
 							saveData(data, cacheKey);
-						}
-						catch (IOException e) {
+						} catch (IOException e) {
 							Ln.e(e, "An error occured on saving request " + cacheKey + " data asynchronously");
-						}
-						catch (CacheSavingException e) {
+						} catch (CacheSavingException e) {
 							Ln.e(e, "An error occured on saving request " + cacheKey + " data asynchronously");
-						}
-						finally {
+						} finally {
 							// notify that saving is finished for test purpose
 							lock.lock();
 							condition.signal();
@@ -109,15 +103,12 @@ public final class GsonObjectPersister<T> extends InFileObjectPersister<T> {
 						}
 					};
 				}.start();
-			}
-			else {
+			} else {
 				saveData(data, cacheKey);
 			}
-		}
-		catch (CacheSavingException e) {
+		} catch (CacheSavingException e) {
 			throw e;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new CacheSavingException(e);
 		}
 		return data;
@@ -131,8 +122,7 @@ public final class GsonObjectPersister<T> extends InFileObjectPersister<T> {
 		// finally store the json in the cache
 		if (!StringUtils.isEmpty(resultJson)) {
 			FileUtils.writeStringToFile(getCacheFile(cacheKey), resultJson, CharEncoding.UTF_8);
-		}
-		else {
+		} else {
 			throw new CacheSavingException("Data was null and could not be serialized in json");
 		}
 	}
