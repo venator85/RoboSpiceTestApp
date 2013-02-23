@@ -1,5 +1,7 @@
 package it.myapp.android.net.core;
 
+import java.io.IOException;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -8,7 +10,7 @@ import org.apache.http.util.EntityUtils;
 import com.octo.android.robospice.request.SpiceRequest;
 
 public abstract class RawRequest<T> extends SpiceRequest<T> {
-
+	
 	private HttpUriRequest request;
 
 	public RawRequest(Class<T> clazz, HttpUriRequest request) {
@@ -18,6 +20,11 @@ public abstract class RawRequest<T> extends SpiceRequest<T> {
 
 	@Override
 	public final T loadDataFromNetwork() throws Exception {
+		
+		if (System.currentTimeMillis() >= 0) { //always throw exception
+			throw new IOException("Test Exception");
+		}
+		
 		HttpResponse hr = MyHttpClient.get().execute(request);
 		HttpEntity entity = hr.getEntity();
 		byte[] response = EntityUtils.toByteArray(entity);

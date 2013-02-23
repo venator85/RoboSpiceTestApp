@@ -1,8 +1,10 @@
 package it.myapp.android;
 
 import it.myapp.android.model.MyAppEntries;
+import it.myapp.android.net.AbstractLoadingRequestListener;
 import it.myapp.android.net.FragmentRequest;
 import it.myapp.android.net.core.MySpiceService;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -14,23 +16,19 @@ import android.widget.Toast;
 
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.exception.RequestCancelledException;
-import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
-import com.octo.android.robospice.request.listener.RequestProgress;
-import com.octo.android.robospice.request.listener.RequestProgressListener;
 
 public class MyFragment extends Fragment {
-
-	private static final String FRAGMENT_CACHE_KEY = "my_app_entries";
 
 	private SpiceManager spiceManager = new SpiceManager(MySpiceService.class);
 
 	private TextView fragment_txt;
 
-	private class FragmentEntriesListener implements RequestListener<MyAppEntries>, RequestProgressListener {
+	private class FragmentEntriesListener extends AbstractLoadingRequestListener<MyAppEntries> {
+		private Dialog progressDialog;
+
 		@Override
-		public void onRequestFailure(SpiceException arg0) {
+		public void onRequestFailure_(SpiceException arg0) {
 			if (!(arg0 instanceof RequestCancelledException)) {
 				Toast.makeText(getActivity(), "Failed to load data.", Toast.LENGTH_SHORT).show();
 			}
@@ -46,8 +44,16 @@ public class MyFragment extends Fragment {
 		}
 
 		@Override
-		public void onRequestProgressUpdate(RequestProgress progress) {
-			Log.e("", "progress " + progress);
+		public void showLoading() {
+			Log.e("FragmentEntriesListener", "showLoading()", new Exception("-- showLoading() trace --"));
+			progressDialog = MyApplication.showLoading(getActivity());
+		}
+		
+		@Override
+		public void hideLoading() {
+			Log.e("FragmentEntriesListener", "hideLoading()", new Exception("-- hideLoading() trace --"));
+			MyApplication.dismissLoading(progressDialog);
+			progressDialog = null;
 		}
 	}
 
@@ -67,10 +73,7 @@ public class MyFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		spiceManager.addListenerIfPending(MyAppEntries.class, FRAGMENT_CACHE_KEY, new FragmentEntriesListener());
-		spiceManager.getFromCache(MyAppEntries.class, FRAGMENT_CACHE_KEY, DurationInMillis.ALWAYS, new FragmentEntriesListener());
-		spiceManager.execute(new FragmentRequest(), FRAGMENT_CACHE_KEY, DurationInMillis.ONE_MINUTE, new FragmentEntriesListener());
+		spiceManager.execute(new FragmentRequest(), new FragmentEntriesListener());
 	}
 
 	@Override
