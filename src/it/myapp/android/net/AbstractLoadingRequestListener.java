@@ -1,5 +1,7 @@
 package it.myapp.android.net;
 
+import android.util.Log;
+
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.octo.android.robospice.request.listener.RequestProgress;
@@ -14,6 +16,7 @@ public abstract class AbstractLoadingRequestListener<T> implements RequestListen
 
 	@Override
 	public final void onRequestProgressUpdate(RequestProgress progress) {
+		Log.e("AbstractLoadingRequestListener", "onRequestProgressUpdate " + progress.getStatus() + ", " + progress.getProgress());
 		if (progress.getStatus() == RequestStatus.LOADING_FROM_NETWORK) {
 			showLoading();
 
