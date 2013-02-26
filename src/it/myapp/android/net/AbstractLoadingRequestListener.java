@@ -10,10 +10,6 @@ import com.octo.android.robospice.request.listener.RequestStatus;
 
 public abstract class AbstractLoadingRequestListener<T> implements RequestListener<T>, RequestProgressListener {
 
-	public AbstractLoadingRequestListener() {
-		super();
-	}
-
 	@Override
 	public final void onRequestProgressUpdate(RequestProgress progress) {
 		Log.e("AbstractLoadingRequestListener", "onRequestProgressUpdate " + progress.getStatus() + ", " + progress.getProgress());
